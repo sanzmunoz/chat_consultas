@@ -93,27 +93,23 @@ docker compose up --build -d
 ```bash
 python3 scripts/test_phase1_validation.py
 ```
-*Evidence report:* `docs/phase1_validation.md` (16/16 tests passed).
 
 ### Phase 2: FastAPI Backend and RLS Security Validation
 ```bash
 cd backend
 PYTHONPATH=. .venv/bin/pytest tests -v
 ```
-*Evidence report:* `docs/phase2_validation.md` (9/9 tests passed).
 
 ### Phase 3: Angular Frontend and Unit Specs Validation
 ```bash
 cd frontend
 npx ng test --no-watch
 ```
-*Evidence report:* `docs/phase3_validation.md` (5/5 specs passed).
 
 ### Phase 4: End-to-End Integration Test
 ```bash
 python3 scripts/test_phase4_e2e.py
 ```
-*Evidence report:* `docs/phase4_validation.md`.
 
 ---
 
@@ -147,7 +143,7 @@ chat_consultas_riwi/
 │   ├── security_model.md     # Security and RLS documentation
 │   ├── copilot_rag.md        # AI and context policy documentation
 │   ├── architecture.md       # Design decisions and Clean Architecture
-│   └── phase[1-4]_validation.md # Validation reports for each phase
+│   └── api-collection.json   # Exported OpenAPI 3.1 collection
 ├── scripts/                  # Utility scripts and test suites
 ├── docker-compose.yml        # Container orchestration
 ├── .github/workflows/ci.yml  # Automated CI/CD pipeline
