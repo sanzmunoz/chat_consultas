@@ -53,6 +53,8 @@ CREATE OR REPLACE FUNCTION rw_fn_send_message(
 ) 
 RETURNS UUID 
 LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     v_actor_id UUID;
@@ -136,6 +138,8 @@ CREATE OR REPLACE FUNCTION rw_fn_edit_message(
 ) 
 RETURNS BOOLEAN 
 LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     v_actor_id UUID;
@@ -177,6 +181,8 @@ CREATE OR REPLACE FUNCTION rw_fn_delete_message(
 ) 
 RETURNS BOOLEAN 
 LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     v_actor_id UUID;
@@ -298,6 +304,8 @@ CREATE OR REPLACE PROCEDURE rw_sp_edit_or_delete_user(
     INOUT p_message TEXT DEFAULT ''
 ) 
 LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
 AS $$
 DECLARE
     v_actor_id UUID;
