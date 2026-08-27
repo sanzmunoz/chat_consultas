@@ -28,13 +28,6 @@ import { I18nService } from '../../../core/services/i18n.service';
         </button>
         <button 
           class="tab-btn" 
-          [class.active]="activeTab === 'copilot'"
-          (click)="tabChange.emit('copilot')"
-        >
-          🤖 {{ i18n.t('nav.copilot') }}
-        </button>
-        <button 
-          class="tab-btn" 
           [class.active]="activeTab === 'profile'"
           (click)="tabChange.emit('profile')"
         >
@@ -71,7 +64,7 @@ import { I18nService } from '../../../core/services/i18n.service';
               <span class="user-position">{{ user.position }} ({{ user.role }})</span>
             </div>
             <button class="logout-btn" (click)="auth.logout()" [title]="i18n.t('auth.logout')">
-              🚪
+              Salir ->
             </button>
           </div>
         }
@@ -204,15 +197,20 @@ import { I18nService } from '../../../core/services/i18n.service';
       color: var(--text-muted);
     }
     .logout-btn {
-      background: transparent;
-      border: none;
+      background: #FEF2F2;
+      border: 1px solid #FECACA;
       cursor: pointer;
-      font-size: 16px;
-      padding: 4px;
-      margin-left: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      margin-left: 6px;
+      color: #DC2626;
+      transition: all 0.15s ease;
+      white-space: nowrap;
     }
     .logout-btn:hover {
-      opacity: 0.7;
+      background-color: #FEE2E2;
+      border-color: #F87171;
     }
     @media (max-width: 768px) {
       .brand-info, .user-position {
@@ -229,6 +227,6 @@ export class NavbarComponent {
   auth = inject(AuthService);
   i18n = inject(I18nService);
 
-  @Input() activeTab: 'conversation' | 'copilot' | 'profile' = 'conversation';
-  @Output() tabChange = new EventEmitter<'conversation' | 'copilot' | 'profile'>();
+  @Input() activeTab: 'conversation' | 'profile' = 'conversation';
+  @Output() tabChange = new EventEmitter<'conversation' | 'profile'>();
 }

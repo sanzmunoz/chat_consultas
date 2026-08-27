@@ -370,6 +370,53 @@ import { CitationCardComponent } from '../citation-card/citation-card.component'
       white-space: nowrap;
       flex-shrink: 0;
     }
+    @media (max-width: 768px) {
+      .copilot-header {
+        padding: 10px 12px;
+      }
+      .copilot-avatar {
+        width: 32px;
+        height: 32px;
+        font-size: 18px;
+      }
+      .copilot-title {
+        font-size: 13px;
+      }
+      .copilot-subtitle {
+        display: none;
+      }
+      .model-badge-group {
+        display: none;
+      }
+      .suggested-section {
+        padding: 8px 10px;
+        max-height: 90px;
+      }
+      .copilot-stream {
+        padding: 10px 8px;
+        gap: 10px;
+      }
+      .chat-bubble {
+        max-width: 96%;
+        padding: 10px 10px;
+      }
+      .copilot-input-area {
+        padding: 8px 10px;
+      }
+      .copilot-textarea {
+        min-height: 40px;
+        font-size: 13px;
+      }
+      .copilot-ask-btn {
+        height: 40px;
+        padding: 0 12px;
+        font-size: 12px;
+      }
+      .scroll-bottom-btn {
+        bottom: 60px;
+        right: 12px;
+      }
+    }
   `]
 })
 export class ChatPanelComponent implements OnInit {

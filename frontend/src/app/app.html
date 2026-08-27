@@ -13,13 +13,20 @@
       <!-- ZONE 1: CONVERSATIONS -->
       <section class="zone-conversation" [class.hidden-on-mobile]="activeTab() !== 'conversation'">
         <!-- Channels Sidebar -->
-        <app-channel-list></app-channel-list>
+        <app-channel-list 
+          [class.hide-on-mobile-chat]="mobileShowChat()"
+          (channelSelected)="mobileShowChat.set(true)"
+        ></app-channel-list>
 
         <!-- Active Channel Workspace -->
-        <div class="chat-workspace">
+        <div class="chat-workspace" [class.hide-on-mobile-list]="!mobileShowChat()">
           @if (currentChannel(); as channel) {
             <!-- Chat Header -->
             <div class="chat-header">
+              <button class="btn-secondary mobile-back-btn" (click)="mobileShowChat.set(false)">
+                ◀ {{ i18n.t('channels.title') }}
+              </button>
+
               <div class="header-channel-info">
                 <div class="title-with-badge">
                   <span class="hash-tag">#</span>
@@ -39,7 +46,7 @@
                   <app-message-search></app-message-search>
                 </div>
                 <button class="btn-secondary members-btn" (click)="toggleMembersModal()">
-                  👥 {{ channel.member_count }} {{ i18n.t('channels.members') }}
+                  👥 {{ channel.member_count }}
                 </button>
               </div>
             </div>
@@ -59,7 +66,7 @@
       </section>
 
       <!-- ZONE 2: COPILOT RAG -->
-      <section class="zone-copilot" [class.hidden-on-mobile]="activeTab() !== 'copilot'" [class.desktop-visible]="activeTab() === 'copilot' || activeTab() === 'conversation'">
+      <section class="zone-copilot" [class.hidden-on-mobile]="activeTab() !== 'conversation'">
         <app-chat-panel></app-chat-panel>
       </section>
 

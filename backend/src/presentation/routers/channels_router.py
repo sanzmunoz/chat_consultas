@@ -1,11 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from typing import List
 from uuid import UUID
-from src.presentation.schemas.channel_schemas import ChannelSummaryResponse, ChannelMemberResponse
+from src.presentation.schemas.channel_schemas import (
+    ChannelSummaryResponse,
+    ChannelMemberResponse,
+    CreateChannelRequest,
+    CreateChannelResponse
+)
 from src.presentation.middleware.auth_middleware import get_current_user
 from src.domain.entities.user import User
 from src.application.channels.list_user_channels_use_case import ListUserChannelsUseCase
 from src.application.channels.get_channel_members_use_case import GetChannelMembersUseCase
+from src.application.channels.create_channel_use_case import CreateChannelUseCase
 from src.infrastructure.database.pg_channel_repository import PgChannelRepository
 
 router = APIRouter(prefix="/api/channels", tags=["Canales"])
@@ -13,6 +19,7 @@ router = APIRouter(prefix="/api/channels", tags=["Canales"])
 channel_repo = PgChannelRepository()
 list_channels_uc = ListUserChannelsUseCase(channel_repo)
 get_members_uc = GetChannelMembersUseCase(channel_repo)
+create_channel_uc = CreateChannelUseCase(channel_repo)
 
 @router.get("", response_model=List[ChannelSummaryResponse], summary="Listar canales del usuario")
 async def list_channels(current_user: User = Depends(get_current_user)):
@@ -38,6 +45,34 @@ async def list_channels(current_user: User = Depends(get_current_user)):
         )
         for s in summaries
     ]
+
+@router.post("", response_model=CreateChannelResponse, status_code=status.HTTP_201_CREATED, summary="Crear un nuevo canal")
+async def create_channel(req: CreateChannelRequest, current_user: User = Depends(get_current_user)):
+    """
+    Crea un nuevo canal e inscribe al creador como propietario (owner).
+    """
+    try:
+        channel = await create_channel_uc.execute(
+            actor_id=current_user.id,
+            name=req.name,
+            description=req.description,
+            type=req.type,
+            member_ids=req.member_ids
+        )
+        return CreateChannelResponse(
+            id=channel.id,
+            name=channel.name,
+            description=channel.description,
+            type=channel.type,
+            created_by=channel.created_by,
+            is_archived=channel.is_archived,
+            created_at=channel.created_at,
+            updated_at=channel.updated_at
+        )
+    except ValueError as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error creando canal: {str(e)}")
 
 @router.get("/{id}/members", response_model=List[ChannelMemberResponse], summary="Obtener miembros de un canal")
 async def get_channel_members(id: UUID, current_user: User = Depends(get_current_user)):

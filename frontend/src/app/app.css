@@ -235,6 +235,10 @@
 }
 
 /* Responsive Rules */
+.mobile-back-btn {
+  display: none;
+}
+
 @media (max-width: 1024px) {
   .zone-copilot {
     width: 320px;
@@ -242,16 +246,73 @@
 }
 
 @media (max-width: 768px) {
+  .mobile-back-btn {
+    display: inline-flex;
+    padding: 4px 8px;
+    font-size: 11.5px;
+    flex-shrink: 0;
+  }
+
   .zone-copilot.desktop-visible {
     display: none;
   }
+  
   .hidden-on-mobile {
     display: none !important;
   }
+  
+  .hide-on-mobile-chat {
+    display: none !important;
+  }
+  
+  .hide-on-mobile-list {
+    display: none !important;
+  }
+  
+  .zone-conversation {
+    border-right: none;
+  }
+
+  .zone-conversation app-channel-list {
+    width: 100% !important;
+    flex: 1;
+  }
+
+  .channels-sidebar {
+    width: 100% !important;
+  }
+  
+  .chat-workspace {
+    width: 100% !important;
+  }
+
+  .chat-header {
+    padding: 8px 12px;
+    gap: 8px;
+  }
+
+  .channel-title-text {
+    font-size: 14px;
+  }
+
+  .channel-desc {
+    display: none;
+  }
+
+  .header-actions {
+    gap: 6px;
+  }
+
+  .search-wrapper {
+    width: 130px;
+  }
+
+  .members-btn {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+  
   .zone-copilot {
     width: 100%;
-  }
-  .search-wrapper {
-    width: 180px;
   }
 }

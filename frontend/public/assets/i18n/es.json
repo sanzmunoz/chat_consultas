@@ -30,7 +30,12 @@
     "noChannels": "No tienes canales asignados",
     "searchChannels": "Buscar canal...",
     "selectChannel": "Selecciona un canal para comenzar a conversar",
-    "channelMembers": "Miembros del Canal"
+    "channelMembers": "Miembros del Canal",
+    "create": "Crear Canal",
+    "channelName": "Nombre del Canal",
+    "description": "Descripción",
+    "type": "Tipo de Canal",
+    "cancel": "Cancelar"
   },
   "messages": {
     "placeholder": "Escribe un mensaje en",

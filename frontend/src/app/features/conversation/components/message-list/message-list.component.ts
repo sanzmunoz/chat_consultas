@@ -321,6 +321,20 @@ import { Message } from '../../../../core/models/message.model';
     .scroll-bottom-btn:hover {
       background-color: #0369A1;
     }
+    @media (max-width: 768px) {
+      .message-list-container {
+        padding: 10px 8px;
+        gap: 8px;
+      }
+      .message-card {
+        max-width: 95%;
+        padding: 10px 10px;
+      }
+      .scroll-bottom-btn {
+        bottom: 12px;
+        right: 12px;
+      }
+    }
   `]
 })
 export class MessageListComponent {

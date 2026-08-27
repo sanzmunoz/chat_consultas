@@ -26,3 +26,19 @@ class ChannelMemberResponse(BaseModel):
     position: str
     role: str
     joined_at: datetime
+
+class CreateChannelRequest(BaseModel):
+    name: str
+    description: Optional[str] = None
+    type: str = "public"
+    member_ids: Optional[list[UUID]] = None
+
+class CreateChannelResponse(BaseModel):
+    id: UUID
+    name: str
+    description: Optional[str] = None
+    type: str
+    created_by: UUID
+    is_archived: bool
+    created_at: datetime
+    updated_at: datetime

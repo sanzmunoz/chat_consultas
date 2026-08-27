@@ -14,3 +14,13 @@ class ChannelRepositoryPort(Protocol):
 
     async def is_member(self, channel_id: UUID, user_id: UUID) -> bool:
         ...
+
+    async def create_channel(
+        self,
+        actor_id: UUID,
+        name: str,
+        description: Optional[str] = None,
+        type: str = "public",
+        member_ids: Optional[List[UUID]] = None
+    ) -> Channel:
+        ...

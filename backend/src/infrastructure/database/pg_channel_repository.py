@@ -111,3 +111,73 @@ class PgChannelRepository(ChannelRepositoryPort):
                 """,
                 channel_id
             )
+
+    async def create_channel(
+        self,
+        actor_id: UUID,
+        name: str,
+        description: Optional[str] = None,
+        type: str = "public",
+        member_ids: Optional[List[UUID]] = None
+    ) -> Channel:
+        clean_name = name.strip()
+        if not clean_name.startswith("#"):
+            clean_name = f"#{clean_name}"
+
+        async with get_connection_with_actor(actor_id) as conn:
+            # 1. Insert channel
+            row = await conn.fetchrow(
+                """
+                INSERT INTO rw_channels (name, description, type, created_by)
+                VALUES ($1, $2, $3, $4)
+                RETURNING id, name, description, type, created_by, is_archived, created_at, updated_at;
+                """,
+                clean_name, description, type, actor_id
+            )
+            channel_id = row["id"]
+
+            # 2. Add creator as owner member
+            await conn.execute(
+                """
+                INSERT INTO rw_channel_members (channel_id, user_id, role)
+                VALUES ($1, $2, 'owner')
+                ON CONFLICT (channel_id, user_id) DO NOTHING;
+                """,
+                channel_id, actor_id
+            )
+
+            # 3. Add other members if specified
+            if member_ids:
+                for mid in member_ids:
+                    if mid != actor_id:
+                        await conn.execute(
+                            """
+                            INSERT INTO rw_channel_members (channel_id, user_id, role)
+                            VALUES ($1, $2, 'member')
+                            ON CONFLICT (channel_id, user_id) DO NOTHING;
+                            """,
+                            channel_id, mid
+                        )
+            elif type == "public":
+                # For public channels, add all active organization users
+                await conn.execute(
+                    """
+                    INSERT INTO rw_channel_members (channel_id, user_id, role)
+                    SELECT $1, id, 'member'
+                    FROM rw_users
+                    WHERE is_active = TRUE AND id != $2
+                    ON CONFLICT (channel_id, user_id) DO NOTHING;
+                    """,
+                    channel_id, actor_id
+                )
+
+            return Channel(
+                id=row["id"],
+                name=row["name"],
+                description=row["description"],
+                type=row["type"],
+                created_by=row["created_by"],
+                is_archived=row["is_archived"],
+                created_at=row["created_at"],
+                updated_at=row["updated_at"]
+            )

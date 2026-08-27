@@ -37,8 +37,9 @@ export class App implements OnInit {
   store = inject(ConversationStore);
   router = inject(Router);
 
-  activeTab = signal<'conversation' | 'copilot' | 'profile'>('conversation');
+  activeTab = signal<'conversation' | 'profile'>('conversation');
   showMembersModal = signal(false);
+  mobileShowChat = signal(false);
 
   ngOnInit() {
     if (this.auth.isAuthenticated()) {
@@ -46,8 +47,11 @@ export class App implements OnInit {
     }
   }
 
-  onTabChange(tab: 'conversation' | 'copilot' | 'profile') {
+  onTabChange(tab: 'conversation' | 'profile') {
     this.activeTab.set(tab);
+    if (tab === 'conversation' && !this.store.selectedChannelId()) {
+      this.mobileShowChat.set(false);
+    }
   }
 
   currentChannel() {

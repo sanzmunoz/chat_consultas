@@ -90,6 +90,21 @@ import { I18nService } from '../../../../core/services/i18n.service';
       padding: 0 18px;
       font-size: 13px;
     }
+    @media (max-width: 768px) {
+      .input-container {
+        padding: 8px 10px;
+        gap: 6px;
+      }
+      .message-textarea {
+        min-height: 42px;
+        font-size: 13px;
+      }
+      .send-btn {
+        height: 42px;
+        padding: 0 12px;
+        font-size: 12px;
+      }
+    }
   `]
 })
 export class MessageInputComponent {

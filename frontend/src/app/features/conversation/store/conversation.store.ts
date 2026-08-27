@@ -61,6 +61,20 @@ export const ConversationStore = signalStore(
       }
     },
 
+    async createChannel(name: string, description?: string, type: string = 'public') {
+      try {
+        const created = await firstValueFrom(api.createChannel({ name, description, type }));
+        await this.loadChannels();
+        if (created && created.id) {
+          this.selectChannel(created.id);
+        }
+        return true;
+      } catch (err: any) {
+        patchState(store, { error: err.error?.detail || err.message || 'Error creando canal' });
+        return false;
+      }
+    },
+
     selectChannel(channelId: string) {
       if (store.selectedChannelId() === channelId) return;
       patchState(store, {

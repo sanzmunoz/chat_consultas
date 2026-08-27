@@ -17,6 +17,10 @@ export class ApiService {
     return this.http.get<ChannelSummary[]>('/api/channels');
   }
 
+  createChannel(data: { name: string; description?: string; type?: string; member_ids?: string[] }): Observable<any> {
+    return this.http.post<any>('/api/channels', data);
+  }
+
   getChannelMembers(channelId: string): Observable<ChannelMember[]> {
     return this.http.get<ChannelMember[]>(`/api/channels/${channelId}/members`);
   }
