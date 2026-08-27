@@ -4,7 +4,7 @@ FROM node:24-alpine AS build
 WORKDIR /app
 
 # Enable pnpm
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@9.15.5 --activate
 
 # Install dependencies
 COPY package.json pnpm-lock.yaml* ./

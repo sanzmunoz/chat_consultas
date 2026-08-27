@@ -5,7 +5,7 @@ import { Injectable, signal } from '@angular/core';
 })
 export class I18nService {
   currentLang = signal<'es' | 'en'>('es');
-  private translations: Record<string, any> = {};
+  translations = signal<Record<string, any>>({});
 
   constructor() {
     this.loadTranslations(this.currentLang());
@@ -20,7 +20,8 @@ export class I18nService {
     try {
       const response = await fetch(`/assets/i18n/${lang}.json`);
       if (response.ok) {
-        this.translations = await response.json();
+        const data = await response.json();
+        this.translations.set(data);
       }
     } catch (e) {
       console.warn(`Failed to load translations for ${lang}`, e);
@@ -29,7 +30,7 @@ export class I18nService {
 
   translate(path: string): string {
     const keys = path.split('.');
-    let current: any = this.translations;
+    let current: any = this.translations();
     for (const key of keys) {
       if (current && typeof current === 'object' && key in current) {
         current = current[key];

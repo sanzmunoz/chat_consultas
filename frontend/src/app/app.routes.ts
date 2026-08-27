@@ -9,18 +9,9 @@ export const routes: Routes = [
   },
   {
     path: '',
+    pathMatch: 'full',
     canActivate: [authGuard],
-    children: [
-      {
-        path: '',
-        redirectTo: 'chat',
-        pathMatch: 'full'
-      },
-      {
-        path: 'chat',
-        loadComponent: () => import('./app').then((m) => m.App)
-      }
-    ]
+    children: []
   },
   {
     path: '**',
