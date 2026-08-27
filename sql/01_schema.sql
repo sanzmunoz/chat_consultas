@@ -56,7 +56,7 @@ COMMENT ON TABLE rw_channel_members IS 'User memberships and participation roles
 -- 5. Messages table: chat messages with soft-delete, audit and vector embeddings
 CREATE TABLE IF NOT EXISTS rw_messages (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    msg_ref VARCHAR(50) UNIQUE,
+    msg_ref VARCHAR(50),
     channel_id UUID NOT NULL REFERENCES rw_channels(id) ON DELETE RESTRICT,
     author_id UUID NOT NULL REFERENCES rw_users(id) ON DELETE RESTRICT,
     content TEXT NOT NULL,

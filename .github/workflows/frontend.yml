@@ -1,0 +1,51 @@
+name: Frontend CI & Deploy (Vercel)
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend.yml"
+  pull_request:
+    branches: [ "main", "master" ]
+    paths:
+      - "frontend/**"
+      - ".github/workflows/frontend.yml"
+
+jobs:
+  frontend-test-and-build:
+    name: Frontend Unit Tests & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          pnpm install
+
+      - name: Run Frontend Tests
+        run: |
+          cd frontend
+          npx ng test --no-watch
+
+      - name: Build Production Distribution
+        run: |
+          cd frontend
+          pnpm build
+
+      - name: Build Docker Container
+        run: |
+          docker build -t riwi-chat-frontend:latest ./frontend

@@ -211,7 +211,7 @@ class PgMessageRepository(MessageRepositoryPort):
         async with get_connection_with_actor(actor_id) as conn:
             vec_str = "[" + ",".join(str(x) for x in query_embedding[:1536]) + "]"
             rows = await conn.fetch(
-                f"""
+                """
                 SELECT 
                     m.id,
                     m.msg_ref,
@@ -223,17 +223,17 @@ class PgMessageRepository(MessageRepositoryPort):
                     u.position AS author_position,
                     m.content,
                     m.created_at,
-                    (1 - (m.embedding <=> '{vec_str}'::vector)) AS similarity_score
+                    (1 - (m.embedding <=> $1::vector)) AS similarity_score
                 FROM rw_messages m
                 JOIN rw_channels c ON m.channel_id = c.id
                 JOIN rw_users u ON m.author_id = u.id
                 WHERE m.is_deleted = FALSE
                   AND m.embedding IS NOT NULL
                   AND rw_is_channel_member(m.channel_id)
-                ORDER BY m.embedding <=> '{vec_str}'::vector ASC
-                LIMIT LEAST(COALESCE($1, 5), 20);
+                ORDER BY m.embedding <=> $1::vector ASC
+                LIMIT LEAST(COALESCE($2, 5), 20);
                 """,
-                limit
+                vec_str, limit
             )
             return [
                 Message(

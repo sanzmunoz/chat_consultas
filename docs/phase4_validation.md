@@ -1,6 +1,6 @@
 # Reporte de Validación — Fase 4: Integración End-to-End & Cierre del Proyecto
 
-**Fecha:** 2026-08-27 13:59:04 UTC  
+**Fecha:** 2026-08-27 14:36:58 UTC  
 **Alcance:** Prueba de flujo completo Frontend, Backend FastAPI, PostgreSQL RLS y OpenAI Copilot RAG.
 
 ---
@@ -13,11 +13,11 @@
 | `User Authentication (JWT + bcrypt)` | ✅ **PASS** | Issued valid tokens for admin and member |
 | `Channel Retrieval with Unread Counts` | ✅ **PASS** | Retrieved 2 channels |
 | `Keyset Pagination (O(1))` | ✅ **PASS** | Next cursor: 10000000-0000-0000-0000-000000000009 |
-| `Atomic Message Creation` | ✅ **PASS** | Created message 8031de0d-2b49-46ce-9dee-c9e5894a164d |
+| `Atomic Message Creation` | ✅ **PASS** | Created message fbf22ecb-f087-4581-ad4d-2c57f14a9ebf |
 | `Message Editing (Immutability)` | ✅ **PASS** | Preserved original_content |
 | `Full-Text Lexical Search` | ✅ **PASS** | Highlight rendered with <mark> tags |
-| `Copilot RAG & Citations` | ✅ **PASS** | 752 tokens, 5 citations |
-| `Token Consumption Analytics` | ✅ **PASS** | 1562 tokens total |
+| `Copilot RAG & Citations` | ✅ **PASS** | 762 tokens, 5 citations |
+| `Token Consumption Analytics` | ✅ **PASS** | 2324 tokens total |
 
 **Resultado General:** 10 de 10 flujos de integración superados exitosamente (100%).
 

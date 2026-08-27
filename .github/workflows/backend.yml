@@ -1,14 +1,24 @@
-name: CI/CD Pipeline - Riwi Platform
+name: Backend CI & Deploy (Render)
 
 on:
   push:
     branches: [ "main", "master", "develop" ]
+    paths:
+      - "backend/**"
+      - "sql/**"
+      - "scripts/**"
+      - ".github/workflows/backend.yml"
   pull_request:
     branches: [ "main", "master" ]
+    paths:
+      - "backend/**"
+      - "sql/**"
+      - "scripts/**"
+      - ".github/workflows/backend.yml"
 
 jobs:
-  backend-and-database:
-    name: Backend & Database Tests
+  backend-test:
+    name: Backend Test Suite & Security Checks
     runs-on: ubuntu-latest
 
     services:
@@ -36,20 +46,20 @@ jobs:
           python-version: "3.12"
           cache: "pip"
 
-      - name: Install Backend Dependencies
+      - name: Install Dependencies
         run: |
           cd backend
           python -m pip install --upgrade pip
-          pip install . pytest pytest-asyncio httpx matplotlib numpy
+          pip install . pytest pytest-asyncio httpx numpy matplotlib
 
-      - name: Initialize Database Schema and Seeds
+      - name: Initialize Database Schema, RLS, Functions & Seeds
         run: |
           PGPASSWORD=postgres psql -h localhost -U postgres -d bd_santiago_munoz_nakamoto -f sql/01_schema.sql
           PGPASSWORD=postgres psql -h localhost -U postgres -d bd_santiago_munoz_nakamoto -f sql/02_security_rls.sql
           PGPASSWORD=postgres psql -h localhost -U postgres -d bd_santiago_munoz_nakamoto -f sql/03_functions_procedures.sql
           PGPASSWORD=postgres psql -h localhost -U postgres -d bd_santiago_munoz_nakamoto -f sql/05_seed.sql
 
-      - name: Run Phase 1 Database Validation
+      - name: Run Phase 1 Database Validations
         run: |
           python3 scripts/test_phase1_validation.py
 
@@ -64,35 +74,6 @@ jobs:
           cd backend
           PYTHONPATH=. pytest tests -v
 
-  frontend:
-    name: Frontend Build & Unit Tests
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout Code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js 24
-        uses: actions/setup-node@v4
-        with:
-          node-version: 24
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: latest
-
-      - name: Install Frontend Dependencies
+      - name: Build Docker Container
         run: |
-          cd frontend
-          pnpm install
-
-      - name: Run Angular Unit Tests
-        run: |
-          cd frontend
-          npx ng test --no-watch
-
-      - name: Build Angular Production Distribution
-        run: |
-          cd frontend
-          pnpm build
+          docker build -t riwi-chat-backend:latest ./backend
