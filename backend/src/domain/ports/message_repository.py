@@ -52,7 +52,8 @@ class MessageRepositoryPort(Protocol):
         self,
         actor_id: UUID,
         query_embedding: List[float],
-        similarity_threshold: float = 0.70,
+        raw_query: Optional[str] = None,
+        similarity_threshold: float = 0.65,
         limit: int = 5
     ) -> List[Message]:
         ...

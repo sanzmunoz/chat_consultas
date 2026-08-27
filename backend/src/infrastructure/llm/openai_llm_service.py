@@ -91,9 +91,23 @@ class OpenAILlmService:
                 "o no existe información disponible en tus canales autorizados."
             )
         else:
-            fallback_text = (
-                f"Respuesta generada según la información disponible en tus canales autorizados.\n"
-                f"Consulta procesada con éxito."
-            )
+            # Parse context blocks from user_prompt
+            context_snippets = []
+            for block in user_prompt.split("\n\n"):
+                if block.startswith("[msg-") or (block.startswith("[") and "De " in block):
+                    context_snippets.append(block)
+
+            if context_snippets:
+                bullets = "\n\n".join(f"• {b}" for b in context_snippets[:4])
+                fallback_text = (
+                    f"De acuerdo con las conversaciones en tus canales autorizados:\n\n"
+                    f"{bullets}\n\n"
+                    f"Puedes verificar las referencias en las citas adjuntas."
+                )
+            else:
+                fallback_text = (
+                    "De acuerdo con la información disponible en tus canales autorizados, "
+                    "se encontraron los mensajes relacionados detallados en las citas adjuntas."
+                )
         c_tokens = len(fallback_text) // 4
         return fallback_text, p_tokens, c_tokens, p_tokens + c_tokens

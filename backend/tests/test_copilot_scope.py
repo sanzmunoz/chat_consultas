@@ -32,3 +32,15 @@ async def test_copilot_strictly_scopes_context(client: AsyncClient, valentina_to
     sant_data = resp_santiago.json()
     assert sant_data["response"] is not None
     assert sant_data["prompt_tokens"] > 0
+    assert len(sant_data["citations"]) > 0
+
+    # 3. Valentina queries about DevOps/Render (a private channel she does NOT belong to)
+    resp_val_devops = await client.post(
+        "/api/copilot/query",
+        headers={"Authorization": f"Bearer {valentina_token}"},
+        json={"query": "¿Cuál es el estado del deploy en Render?"}
+    )
+    assert resp_val_devops.status_code == 200
+    val_devops_data = resp_val_devops.json()
+    assert len(val_devops_data["citations"]) == 0
+    assert "No tengo acceso a los mensajes de los canales relacionados" in val_devops_data["response"]

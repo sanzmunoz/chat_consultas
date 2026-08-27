@@ -50,6 +50,12 @@ import { I18nService } from '../../../../core/services/i18n.service';
     </aside>
   `,
   styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      flex-shrink: 0;
+    }
     .channels-sidebar {
       width: 280px;
       background-color: var(--bg-sidebar);

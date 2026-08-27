@@ -205,36 +205,91 @@ class PgMessageRepository(MessageRepositoryPort):
         self,
         actor_id: UUID,
         query_embedding: List[float],
-        similarity_threshold: float = 0.70,
+        raw_query: Optional[str] = None,
+        similarity_threshold: float = 0.65,
         limit: int = 5
     ) -> List[Message]:
+        import re
         async with get_connection_with_actor(actor_id) as conn:
             vec_str = "[" + ",".join(str(x) for x in query_embedding[:1536]) + "]"
-            rows = await conn.fetch(
-                """
-                SELECT 
-                    m.id,
-                    m.msg_ref,
-                    m.channel_id,
-                    c.name AS channel_name,
-                    m.author_id,
-                    u.display_name AS author_name,
-                    u.username AS author_username,
-                    u.position AS author_position,
-                    m.content,
-                    m.created_at,
-                    (1 - (m.embedding <=> $1::vector)) AS similarity_score
-                FROM rw_messages m
-                JOIN rw_channels c ON m.channel_id = c.id
-                JOIN rw_users u ON m.author_id = u.id
-                WHERE m.is_deleted = FALSE
-                  AND m.embedding IS NOT NULL
-                  AND rw_is_channel_member(m.channel_id)
-                ORDER BY m.embedding <=> $1::vector ASC
-                LIMIT LEAST(COALESCE($2, 5), 20);
-                """,
-                vec_str, limit
-            )
+
+            fts_terms = None
+            if raw_query and raw_query.strip():
+                words = re.findall(r"[a-zA-Z0-9áéíóúÁÉÍÓÚñÑ_]+", raw_query.lower())
+                stopwords = {
+                    "de", "la", "que", "el", "en", "y", "a", "los", "del", "se", "las", "por", "un", "para", "con", "no", 
+                    "una", "su", "al", "lo", "como", "mas", "más", "pero", "sus", "le", "ya", "o", "este", "sí", "porque",
+                    "esta", "entre", "cuando", "muy", "sin", "sobre", "también", "tambien", "me", "hasta", "hay", "donde",
+                    "quien", "desde", "todo", "nos", "durante", "todos", "uno", "les", "ni", "contra", "otros", "ese", "eso",
+                    "ante", "ellos", "e", "esto", "mí", "antes", "algunos", "qué", "que", "cuál", "cual", "cómo", "como",
+                    "tiene", "tienen", "ha", "han", "canal", "actual"
+                }
+                significant = [w for w in words if w not in stopwords and len(w) > 2]
+                if significant:
+                    fts_terms = " | ".join(significant)
+
+            if fts_terms:
+                rows = await conn.fetch(
+                    f"""
+                    SELECT 
+                        m.id,
+                        m.msg_ref,
+                        m.channel_id,
+                        c.name AS channel_name,
+                        m.author_id,
+                        u.display_name AS author_name,
+                        u.username AS author_username,
+                        u.position AS author_position,
+                        m.content,
+                        m.created_at,
+                        ts_rank(m.search_vector, to_tsquery('spanish', $1)) AS fts_rank,
+                        (1.0 - (m.embedding <=> '{vec_str}'::vector)) AS vec_sim
+                    FROM rw_messages m
+                    JOIN rw_channels c ON m.channel_id = c.id
+                    JOIN rw_users u ON m.author_id = u.id
+                    WHERE m.is_deleted = FALSE
+                      AND rw_is_channel_member(m.channel_id)
+                      AND (
+                          m.search_vector @@ to_tsquery('spanish', $1)
+                          OR (m.embedding IS NOT NULL AND (1.0 - (m.embedding <=> '{vec_str}'::vector)) >= $2)
+                      )
+                    ORDER BY 
+                        COALESCE(ts_rank(m.search_vector, to_tsquery('spanish', $1)), 0.0) DESC,
+                        (1.0 - (m.embedding <=> '{vec_str}'::vector)) DESC,
+                        m.created_at DESC
+                    LIMIT LEAST(COALESCE($3, 5), 20);
+                    """,
+                    fts_terms, similarity_threshold, limit
+                )
+            else:
+                rows = await conn.fetch(
+                    f"""
+                    SELECT 
+                        m.id,
+                        m.msg_ref,
+                        m.channel_id,
+                        c.name AS channel_name,
+                        m.author_id,
+                        u.display_name AS author_name,
+                        u.username AS author_username,
+                        u.position AS author_position,
+                        m.content,
+                        m.created_at,
+                        0.0 AS fts_rank,
+                        (1.0 - (m.embedding <=> '{vec_str}'::vector)) AS vec_sim
+                    FROM rw_messages m
+                    JOIN rw_channels c ON m.channel_id = c.id
+                    JOIN rw_users u ON m.author_id = u.id
+                    WHERE m.is_deleted = FALSE
+                      AND m.embedding IS NOT NULL
+                      AND rw_is_channel_member(m.channel_id)
+                      AND (1.0 - (m.embedding <=> '{vec_str}'::vector)) >= $1
+                    ORDER BY (1.0 - (m.embedding <=> '{vec_str}'::vector)) DESC, m.created_at DESC
+                    LIMIT LEAST(COALESCE($2, 5), 20);
+                    """,
+                    similarity_threshold, limit
+                )
+
             return [
                 Message(
                     id=r["id"],
@@ -246,7 +301,7 @@ class PgMessageRepository(MessageRepositoryPort):
                     author_name=r["author_name"],
                     author_username=r["author_username"],
                     author_position=f"{r['channel_name']} | {r['author_position']}",
-                    search_rank=float(r["similarity_score"]) if r["similarity_score"] is not None else 0.0
+                    search_rank=float(r["vec_sim"]) if r["vec_sim"] is not None else 0.0
                 )
                 for r in rows
             ]

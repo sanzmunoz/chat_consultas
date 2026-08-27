@@ -1,4 +1,4 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ViewChild, ElementRef, signal, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { CopilotStore } from '../../store/copilot.store';
@@ -49,8 +49,8 @@ import { CitationCardComponent } from '../citation-card/citation-card.component'
         </div>
       </div>
 
-      <!-- Chat Stream -->
-      <div class="copilot-stream">
+      <!-- Chat Stream (Scrollable mouse / manual) -->
+      <div class="copilot-stream" #copilotStream (scroll)="onStreamScroll()">
         @for (msg of store.chatHistory(); track msg.id) {
           <div class="chat-bubble" [class.user-bubble]="msg.sender === 'user'" [class.copilot-bubble]="msg.sender === 'copilot'">
             <div class="bubble-header">
@@ -85,37 +85,61 @@ import { CitationCardComponent } from '../citation-card/citation-card.component'
         }
       </div>
 
-      <!-- Input Form -->
+      <!-- Floating Scroll-To-Bottom Button -->
+      @if (showScrollBottom()) {
+        <button class="scroll-bottom-btn" (click)="scrollToBottom(true)" [title]="'Ir al final'">
+          ⬇️
+        </button>
+      }
+
+      <!-- Input Form (Fixed at the bottom) -->
       <div class="copilot-input-area">
         <div class="copilot-input-row">
-          <input 
-            type="text" 
-            class="input-field" 
+          <textarea 
+            class="input-field copilot-textarea" 
             [placeholder]="i18n.t('copilot.askPlaceholder')"
             [(ngModel)]="queryInput"
-            (keydown.enter)="onSendQuery()"
+            (keydown.enter)="handleKeyDown($event)"
             [disabled]="store.isLoading()"
-          />
+            rows="1"
+          ></textarea>
           <button 
             class="btn-primary copilot-ask-btn"
             [disabled]="store.isLoading() || !queryInput.trim()"
             (click)="onSendQuery()"
           >
-            {{ i18n.t('copilot.askButton') }}
+            @if (store.isLoading()) {
+              ⏳
+            } @else {
+              {{ i18n.t('copilot.askButton') }}
+            }
           </button>
         </div>
       </div>
     </div>
   `,
   styles: [`
+    :host {
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+      min-height: 0;
+      height: 100%;
+      overflow: hidden;
+    }
     .copilot-panel-container {
       display: flex;
       flex-direction: column;
+      flex: 1;
+      min-height: 0;
       height: 100%;
       background-color: #FFFFFF;
       border-left: 1px solid var(--border-color);
+      overflow: hidden;
+      position: relative;
     }
     .copilot-header {
+      flex-shrink: 0;
       padding: 16px;
       border-bottom: 1px solid var(--border-color);
       background-color: var(--bg-surface);
@@ -161,9 +185,12 @@ import { CitationCardComponent } from '../citation-card/citation-card.component'
       line-height: 1.35;
     }
     .suggested-section {
+      flex-shrink: 0;
       padding: 10px 16px;
       background-color: #FFFFFF;
       border-bottom: 1px solid var(--border-color);
+      max-height: 110px;
+      overflow-y: auto;
     }
     .suggested-label {
       font-size: 10px;
@@ -193,13 +220,30 @@ import { CitationCardComponent } from '../citation-card/citation-card.component'
       background-color: var(--blue-surface);
     }
     .copilot-stream {
-      flex: 1;
+      flex: 1 1 0%;
+      min-height: 0;
       overflow-y: auto;
+      overflow-x: hidden;
+      overscroll-behavior-y: contain;
       padding: 16px;
       display: flex;
       flex-direction: column;
       gap: 14px;
       background-color: #F8FAFC;
+      scrollbar-width: thin;
+      scrollbar-color: #94A3B8 #F1F5F9;
+    }
+    .copilot-stream::-webkit-scrollbar {
+      width: 6px;
+    }
+    .copilot-stream::-webkit-scrollbar-track {
+      background: #F1F5F9;
+    }
+    .copilot-stream::-webkit-scrollbar-thumb {
+      background: #94A3B8;
+    }
+    .copilot-stream::-webkit-scrollbar-thumb:hover {
+      background: var(--blue-primary);
     }
     .chat-bubble {
       padding: 12px 14px;
@@ -242,6 +286,7 @@ import { CitationCardComponent } from '../citation-card/citation-card.component'
       font-size: 13.5px;
       line-height: 1.45;
       color: var(--text-main);
+      word-break: break-word;
     }
     .citations-container {
       margin-top: 10px;
@@ -266,18 +311,64 @@ import { CitationCardComponent } from '../citation-card/citation-card.component'
       font-size: 12px;
       color: var(--blue-primary);
     }
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border: 2px solid var(--blue-surface);
+      border-top-color: var(--blue-primary);
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    .scroll-bottom-btn {
+      position: absolute;
+      bottom: 74px;
+      right: 20px;
+      width: 32px;
+      height: 32px;
+      background-color: var(--blue-primary);
+      color: #FFFFFF;
+      border: 1px solid var(--blue-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+      z-index: 20;
+      font-size: 12px;
+      transition: background-color 0.15s ease;
+    }
+    .scroll-bottom-btn:hover {
+      background-color: #0369A1;
+    }
     .copilot-input-area {
+      flex-shrink: 0;
       padding: 12px 16px;
       background-color: #FFFFFF;
       border-top: 2px solid var(--border-color);
+      position: relative;
+      z-index: 10;
     }
     .copilot-input-row {
       display: flex;
       gap: 8px;
+      align-items: flex-end;
+    }
+    .copilot-textarea {
+      flex: 1;
+      min-height: 44px;
+      max-height: 100px;
+      resize: vertical;
+      font-size: 13px;
+      line-height: 1.4;
     }
     .copilot-ask-btn {
+      height: 44px;
       padding: 0 18px;
       font-size: 13px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
   `]
 })
@@ -285,10 +376,54 @@ export class ChatPanelComponent implements OnInit {
   store = inject(CopilotStore);
   i18n = inject(I18nService);
 
+  @ViewChild('copilotStream') private copilotStream?: ElementRef<HTMLDivElement>;
+
   queryInput: string = '';
+  showScrollBottom = signal<boolean>(false);
+
+  private userScrolledUp = false;
+
+  constructor() {
+    effect(() => {
+      this.store.chatHistory();
+      const loading = this.store.isLoading();
+
+      setTimeout(() => {
+        if (!this.userScrolledUp || loading) {
+          this.scrollToBottom(false);
+        }
+      }, 50);
+    });
+  }
 
   ngOnInit() {
     this.store.loadUsage();
+  }
+
+  onStreamScroll() {
+    if (!this.copilotStream) return;
+    const el = this.copilotStream.nativeElement;
+    const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+
+    if (distanceFromBottom > 100) {
+      this.userScrolledUp = true;
+      this.showScrollBottom.set(true);
+    } else {
+      this.userScrolledUp = false;
+      this.showScrollBottom.set(false);
+    }
+  }
+
+  scrollToBottom(smooth: boolean = true) {
+    if (!this.copilotStream) return;
+    const el = this.copilotStream.nativeElement;
+    if (smooth) {
+      el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+    } else {
+      el.scrollTop = el.scrollHeight;
+    }
+    this.userScrolledUp = false;
+    this.showScrollBottom.set(false);
   }
 
   askPrompt(promptText: string) {
@@ -296,9 +431,18 @@ export class ChatPanelComponent implements OnInit {
     this.onSendQuery();
   }
 
+  handleKeyDown(event: any) {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault();
+      this.onSendQuery();
+    }
+  }
+
   onSendQuery() {
-    if (!this.queryInput.trim()) return;
+    if (!this.queryInput.trim() || this.store.isLoading()) return;
     this.store.askQuestion(this.queryInput);
     this.queryInput = '';
+    this.userScrolledUp = false;
+    setTimeout(() => this.scrollToBottom(true), 50);
   }
 }

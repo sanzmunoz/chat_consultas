@@ -43,6 +43,10 @@ import { I18nService } from '../../../../core/services/i18n.service';
     </div>
   `,
   styles: [`
+    :host {
+      display: block;
+      flex-shrink: 0;
+    }
     .input-container {
       background-color: #FFFFFF;
       border-top: 2px solid var(--border-color);

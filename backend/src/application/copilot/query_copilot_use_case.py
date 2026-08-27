@@ -10,7 +10,9 @@ from src.domain.ports.message_repository import MessageRepositoryPort
 from src.domain.ports.copilot_log_repository import CopilotLogRepositoryPort
 from src.domain.ports.llm_service import LlmServicePort
 
-PROMPT_PATH = Path(__file__).resolve().parent.parent.parent.parent / "prompts" / "v1.yaml"
+PROMPT_PATH = Path(__file__).resolve().parents[3] / "prompts" / "v1.yaml"
+if not PROMPT_PATH.exists():
+    PROMPT_PATH = Path(__file__).resolve().parents[4] / "backend" / "prompts" / "v1.yaml"
 
 class QueryCopilotUseCase:
     def __init__(
@@ -59,7 +61,8 @@ class QueryCopilotUseCase:
         context_messages = await self.message_repo.retrieve_copilot_context_embeddings(
             actor_id=actor_id,
             query_embedding=query_embedding,
-            similarity_threshold=0.70,
+            raw_query=clean_query,
+            similarity_threshold=0.65,
             limit=5
         )
 

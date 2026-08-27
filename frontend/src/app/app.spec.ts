@@ -8,10 +8,13 @@ import { I18nService } from './core/services/i18n.service';
 import { CitationCardComponent } from './features/copilot/components/citation-card/citation-card.component';
 import { LoginComponent } from './features/auth/login.component';
 
+import { MessageListComponent } from './features/conversation/components/message-list/message-list.component';
+import { ChatPanelComponent } from './features/copilot/components/chat-panel/chat-panel.component';
+
 describe('Riwi Internal Chat & Copilot Frontend Suite', () => {
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [App, CitationCardComponent, LoginComponent],
+      imports: [App, CitationCardComponent, LoginComponent, MessageListComponent, ChatPanelComponent],
       providers: [
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -60,5 +63,18 @@ describe('Riwi Internal Chat & Copilot Frontend Suite', () => {
     const loginComp = fixture.componentInstance;
     expect(loginComp).toBeTruthy();
     expect(loginComp.identifier).toBe('smunoz');
+  });
+
+  it('6. should create the MessageListComponent and initialize displayedMessages', () => {
+    const fixture = TestBed.createComponent(MessageListComponent);
+    const msgListComp = fixture.componentInstance;
+    expect(msgListComp).toBeTruthy();
+    expect(msgListComp.displayedMessages()).toEqual([]);
+  });
+
+  it('7. should create the ChatPanelComponent and initialize scroll stream', () => {
+    const fixture = TestBed.createComponent(ChatPanelComponent);
+    const chatPanelComp = fixture.componentInstance;
+    expect(chatPanelComp).toBeTruthy();
   });
 });
