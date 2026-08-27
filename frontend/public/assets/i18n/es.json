@@ -1,0 +1,95 @@
+{
+  "app": {
+    "title": "Riwi Co. Mensajería Interna",
+    "subtitle": "Plataforma de comunicación y Copiloto RAG",
+    "version": "v1.0.0"
+  },
+  "auth": {
+    "loginTitle": "Iniciar Sesión en Riwi Co.",
+    "loginSubtitle": "Accede con tu usuario corporativo",
+    "usernameOrEmail": "Usuario o Correo Electrónico",
+    "password": "Contraseña",
+    "loginButton": "Ingresar al Sistema",
+    "loggingIn": "Autenticando...",
+    "logout": "Cerrar Sesión",
+    "quickLogin": "Acceso rápido de prueba:"
+  },
+  "nav": {
+    "conversations": "Conversaciones",
+    "copilot": "Copiloto IA (RAG)",
+    "profile": "Mi Perfil & Tokens",
+    "language": "Idioma",
+    "spanish": "Español",
+    "english": "English"
+  },
+  "channels": {
+    "title": "Canales de Comunicación",
+    "public": "Público",
+    "private": "Privado",
+    "members": "miembros",
+    "noChannels": "No tienes canales asignados",
+    "searchChannels": "Buscar canal...",
+    "selectChannel": "Selecciona un canal para comenzar a conversar",
+    "channelMembers": "Miembros del Canal"
+  },
+  "messages": {
+    "placeholder": "Escribe un mensaje en",
+    "send": "Enviar",
+    "sending": "Enviando...",
+    "pending": "Pendiente",
+    "sent": "Enviado",
+    "failed": "Fallido",
+    "edited": "editado",
+    "original": "Ver estado original",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "deleteConfirm": "¿Deseas eliminar este mensaje? (Anulación lógica)",
+    "loadMore": "Cargar mensajes anteriores",
+    "noMessages": "No hay mensajes en este canal. ¡Sé el primero en escribir!",
+    "searching": "Buscando...",
+    "searchPlaceholder": "Buscar en mensajes autorizados (Full-text)...",
+    "searchResults": "Resultados de búsqueda",
+    "noSearchResults": "No se encontraron mensajes coincidentes en tus canales autorizados.",
+    "clearSearch": "Limpiar búsqueda"
+  },
+  "copilot": {
+    "title": "Copiloto IA de Riwi Co.",
+    "subtitle": "Búsqueda RAG semántica con permisos RLS por canal",
+    "disclaimer": "El copiloto solo responde con información de canales donde eres miembro. Los mensajes de chat son tratados como datos no ejecutables.",
+    "askPlaceholder": "Pregunta sobre acuerdos, avances o decisiones del equipo...",
+    "askButton": "Preguntar",
+    "thinking": "Analizando contexto y generando respuesta...",
+    "citations": "Fuentes Citadas",
+    "noCitations": "Sin fuentes citadas",
+    "model": "Modelo",
+    "promptVersion": "Versión Prompt",
+    "tokensUsed": "Tokens usados",
+    "suggestedQuestions": "Preguntas sugeridas:"
+  },
+  "profile": {
+    "title": "Perfil del Usuario",
+    "username": "Nombre de usuario",
+    "email": "Correo corporativo",
+    "displayName": "Nombre completo",
+    "position": "Cargo",
+    "role": "Rol en el sistema",
+    "editProfile": "Editar Perfil",
+    "saveChanges": "Guardar Cambios",
+    "saving": "Guardando...",
+    "tokenUsageTitle": "Métricas de Consumo del Copiloto",
+    "totalQueries": "Consultas realizadas",
+    "promptTokens": "Tokens de entrada (Prompt)",
+    "completionTokens": "Tokens generados (Completion)",
+    "totalTokens": "Total de tokens consumidos",
+    "lastQuery": "Última consulta"
+  },
+  "common": {
+    "loading": "Cargando datos...",
+    "error": "Ocurrió un error inesperado",
+    "retry": "Reintentar",
+    "close": "Cerrar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "success": "Operación completada con éxito"
+  }
+}

@@ -1,0 +1,176 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Ubuntu+Mono:wght@400;700&display=swap');
+
+:root {
+  --font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-mono: 'Ubuntu Mono', monospace;
+
+  /* Color Palette */
+  --bg-main: #FFFFFF;
+  --bg-surface: #F8FAFC;
+  --bg-card: #FFFFFF;
+  --bg-sidebar: #F1F5F9;
+  
+  --text-main: #0F172A;     /* Black / Deep Slate */
+  --text-muted: #475569;
+  --text-inverse: #FFFFFF;
+
+  /* Accent Colors */
+  --blue-light: #38BDF8;   /* Sky Blue */
+  --blue-primary: #0284C7; /* Active Blue */
+  --blue-surface: #E0F2FE; /* Light Blue Tint */
+
+  --mint-green: #10B981;   /* Mint Green */
+  --mint-dark: #059669;    /* Darker Mint Green */
+  --mint-surface: #ECFDF5; /* Light Mint Tint */
+
+  --border-color: #CBD5E1;
+  --border-active: #0284C7;
+  --border-mint: #10B981;
+
+  --status-pending: #F59E0B;
+  --status-sent: #10B981;
+  --status-failed: #EF4444;
+
+  /* Strictly NO border rounding as requested */
+  --border-radius: 0px !important;
+}
+
+* {
+  box-sizing: border-box;
+  font-family: var(--font-family);
+  border-radius: 0 !important; /* Enforce sharp rectangular edges across ALL elements */
+}
+
+html, body {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--bg-surface);
+  color: var(--text-main);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F1F5F9;
+}
+::-webkit-scrollbar-thumb {
+  background: #94A3B8;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--blue-primary);
+}
+
+/* Search Term Highlighting */
+mark {
+  background-color: #FEF08A;
+  color: #854D0E;
+  font-weight: 600;
+  padding: 0 3px;
+  border: 1px solid #FACC15;
+}
+
+/* Base Utility Classes */
+.btn-primary {
+  background-color: var(--blue-primary);
+  color: #FFFFFF;
+  border: 1px solid var(--blue-primary);
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.15s ease;
+}
+.btn-primary:hover:not(:disabled) {
+  background-color: #0369A1;
+}
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.btn-secondary {
+  background-color: #FFFFFF;
+  color: var(--text-main);
+  border: 1px solid var(--border-color);
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.15s ease;
+}
+.btn-secondary:hover {
+  background-color: var(--bg-surface);
+  border-color: var(--text-muted);
+}
+
+.btn-mint {
+  background-color: var(--mint-green);
+  color: #FFFFFF;
+  border: 1px solid var(--mint-dark);
+  padding: 8px 16px;
+  font-weight: 500;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  transition: background-color 0.15s ease;
+}
+.btn-mint:hover:not(:disabled) {
+  background-color: var(--mint-dark);
+}
+
+.input-field {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--border-color);
+  background-color: #FFFFFF;
+  color: var(--text-main);
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s ease;
+}
+.input-field:focus {
+  border-color: var(--blue-primary);
+  box-shadow: 0 0 0 1px var(--blue-primary);
+}
+
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  border: 1px solid transparent;
+}
+.badge-blue {
+  background-color: var(--blue-surface);
+  color: var(--blue-primary);
+  border-color: var(--blue-light);
+}
+.badge-mint {
+  background-color: var(--mint-surface);
+  color: var(--mint-dark);
+  border-color: var(--mint-green);
+}
+.badge-gray {
+  background-color: #F1F5F9;
+  color: #475569;
+  border-color: #CBD5E1;
+}
+
+.card-box {
+  background-color: #FFFFFF;
+  border: 1px solid var(--border-color);
+  padding: 16px;
+}

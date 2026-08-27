@@ -8,6 +8,7 @@ class EditDeleteUserUseCase:
 
     async def execute(
         self,
+        actor_id: UUID,
         target_user_id: UUID,
         action: str,  # 'EDIT' | 'DELETE'
         display_name: Optional[str] = None,
@@ -25,6 +26,7 @@ class EditDeleteUserUseCase:
             return False, "Invalid action. Must be EDIT or DELETE."
 
         return await self.user_repo.edit_or_delete_user(
+            actor_id=actor_id,
             target_user_id=target_user_id,
             action=action_clean,
             display_name=display_name,

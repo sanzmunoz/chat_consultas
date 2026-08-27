@@ -120,6 +120,7 @@ class PgUserRepository(UserRepositoryPort):
 
     async def edit_or_delete_user(
         self,
+        actor_id: UUID,
         target_user_id: UUID,
         action: str,
         display_name: Optional[str] = None,
@@ -127,8 +128,7 @@ class PgUserRepository(UserRepositoryPort):
         role: Optional[str] = None
     ) -> Tuple[bool, str]:
         # Uses actor propagation from current session
-        pool = get_pool()
-        async with pool.acquire() as conn:
+        async with get_connection_with_actor(actor_id) as conn:
             row = await conn.fetchrow(
                 """
                 CALL rw_sp_edit_or_delete_user($1, $2, $3, $4, $5, NULL, NULL);
@@ -144,8 +144,7 @@ class PgUserRepository(UserRepositoryPort):
         async with pool.acquire() as conn:
             await conn.execute(
                 """
-                INSERT INTO rw_refresh_tokens (user_id, token_hash, expires_at, is_revoked)
-                VALUES ($1, $2, $3, FALSE);
+                SELECT rw_fn_save_refresh_token($1, $2, $3);
                 """,
                 user_id, token_hash, expires_at
             )
@@ -158,39 +157,9 @@ class PgUserRepository(UserRepositoryPort):
     ) -> Optional[UUID]:
         pool = get_pool()
         async with pool.acquire() as conn:
-            async with conn.transaction():
-                # 1. Fetch valid refresh token
-                row = await conn.fetchrow(
-                    """
-                    SELECT id, user_id, expires_at, is_revoked
-                    FROM rw_refresh_tokens
-                    WHERE token_hash = $1
-                    FOR UPDATE;
-                    """,
-                    token_hash
-                )
-                if not row or row["is_revoked"] or row["expires_at"] < datetime.now(row["expires_at"].tzinfo):
-                    return None
-
-                user_id = row["user_id"]
-
-                # 2. Revoke old token
-                await conn.execute(
-                    """
-                    UPDATE rw_refresh_tokens
-                    SET is_revoked = TRUE
-                    WHERE id = $1;
-                    """,
-                    row["id"]
-                )
-
-                # 3. Save new rotated token
-                await conn.execute(
-                    """
-                    INSERT INTO rw_refresh_tokens (user_id, token_hash, expires_at, is_revoked)
-                    VALUES ($1, $2, $3, FALSE);
-                    """,
-                    user_id, new_token_hash, new_expires_at
-                )
-
-                return user_id
+            return await conn.fetchval(
+                """
+                SELECT rw_fn_rotate_refresh_token($1, $2, $3);
+                """,
+                token_hash, new_token_hash, new_expires_at
+            )

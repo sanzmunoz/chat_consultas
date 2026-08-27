@@ -1,0 +1,95 @@
+{
+  "app": {
+    "title": "Riwi Co. Internal Messaging",
+    "subtitle": "Communication Platform & RAG Copilot",
+    "version": "v1.0.0"
+  },
+  "auth": {
+    "loginTitle": "Sign in to Riwi Co.",
+    "loginSubtitle": "Access with your corporate account",
+    "usernameOrEmail": "Username or Corporate Email",
+    "password": "Password",
+    "loginButton": "Sign In",
+    "loggingIn": "Authenticating...",
+    "logout": "Sign Out",
+    "quickLogin": "Quick test login:"
+  },
+  "nav": {
+    "conversations": "Conversations",
+    "copilot": "AI Copilot (RAG)",
+    "profile": "My Profile & Tokens",
+    "language": "Language",
+    "spanish": "Español",
+    "english": "English"
+  },
+  "channels": {
+    "title": "Communication Channels",
+    "public": "Public",
+    "private": "Private",
+    "members": "members",
+    "noChannels": "No channels assigned",
+    "searchChannels": "Search channel...",
+    "selectChannel": "Select a channel to start messaging",
+    "channelMembers": "Channel Members"
+  },
+  "messages": {
+    "placeholder": "Write a message in",
+    "send": "Send",
+    "sending": "Sending...",
+    "pending": "Pending",
+    "sent": "Sent",
+    "failed": "Failed",
+    "edited": "edited",
+    "original": "View original state",
+    "edit": "Edit",
+    "delete": "Delete",
+    "deleteConfirm": "Do you want to delete this message? (Soft-delete)",
+    "loadMore": "Load previous messages",
+    "noMessages": "No messages in this channel yet. Be the first to write!",
+    "searching": "Searching...",
+    "searchPlaceholder": "Search authorized messages (Full-text)...",
+    "searchResults": "Search Results",
+    "noSearchResults": "No matching messages found in your authorized channels.",
+    "clearSearch": "Clear search"
+  },
+  "copilot": {
+    "title": "Riwi Co. AI Copilot",
+    "subtitle": "Semantic RAG search with RLS channel permissions",
+    "disclaimer": "Copilot only answers with information from channels where you are a member. Chat messages are treated as non-executable data.",
+    "askPlaceholder": "Ask about team decisions, agreements, or progress...",
+    "askButton": "Ask Copilot",
+    "thinking": "Analyzing context and generating response...",
+    "citations": "Cited Sources",
+    "noCitations": "No sources cited",
+    "model": "Model",
+    "promptVersion": "Prompt Version",
+    "tokensUsed": "Tokens used",
+    "suggestedQuestions": "Suggested questions:"
+  },
+  "profile": {
+    "title": "User Profile",
+    "username": "Username",
+    "email": "Corporate Email",
+    "displayName": "Full Name",
+    "position": "Position / Role",
+    "role": "System Role",
+    "editProfile": "Edit Profile",
+    "saveChanges": "Save Changes",
+    "saving": "Saving...",
+    "tokenUsageTitle": "Copilot Consumption Metrics",
+    "totalQueries": "Queries made",
+    "promptTokens": "Input tokens (Prompt)",
+    "completionTokens": "Generated tokens (Completion)",
+    "totalTokens": "Total tokens consumed",
+    "lastQuery": "Last query"
+  },
+  "common": {
+    "loading": "Loading data...",
+    "error": "An unexpected error occurred",
+    "retry": "Retry",
+    "close": "Close",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "success": "Operation completed successfully"
+  }
+}

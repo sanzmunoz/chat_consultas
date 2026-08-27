@@ -237,6 +237,8 @@ RETURNS TABLE (
 ) 
 LANGUAGE sql 
 STABLE
+SECURITY DEFINER
+SET search_path = public
 AS $$
     SELECT 
         u.id,

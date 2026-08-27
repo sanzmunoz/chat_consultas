@@ -25,6 +25,7 @@ class UserRepositoryPort(Protocol):
 
     async def edit_or_delete_user(
         self,
+        actor_id: UUID,
         target_user_id: UUID,
         action: str,  # 'EDIT' | 'DELETE'
         display_name: Optional[str] = None,

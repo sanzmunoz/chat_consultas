@@ -89,6 +89,7 @@ async def edit_user(
         )
 
     success, msg = await edit_delete_uc.execute(
+        actor_id=current_user.id,
         target_user_id=id,
         action="EDIT",
         display_name=req.display_name,
@@ -117,6 +118,7 @@ async def deactivate_user(
         )
 
     success, msg = await edit_delete_uc.execute(
+        actor_id=current_admin.id,
         target_user_id=id,
         action="DELETE"
     )
