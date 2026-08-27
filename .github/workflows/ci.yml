@@ -1,0 +1,98 @@
+name: CI/CD Pipeline - Riwi Platform
+
+on:
+  push:
+    branches: [ "main", "master", "develop" ]
+  pull_request:
+    branches: [ "main", "master" ]
+
+jobs:
+  backend-and-database:
+    name: Backend & Database Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: pgvector/pgvector:pg16
+        env:
+          POSTGRES_DB: bd_santiago_munoz_nakamoto
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: "pip"
+
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install . pytest pytest-asyncio httpx matplotlib numpy
+
+      - name: Initialize Database Schema and Seeds
+        run: |
+          PGPASSWORD=postgres psql -h localhost -U postgres -d bd_santiago_munoz_nakamoto -f sql/01_schema.sql
+          PGPASSWORD=postgres psql -h localhost -U postgres -d bd_santiago_munoz_nakamoto -f sql/02_security_rls.sql
+          PGPASSWORD=postgres psql -h localhost -U postgres -d bd_santiago_munoz_nakamoto -f sql/03_functions_procedures.sql
+          PGPASSWORD=postgres psql -h localhost -U postgres -d bd_santiago_munoz_nakamoto -f sql/05_seed.sql
+
+      - name: Run Phase 1 Database Validation
+        run: |
+          python3 scripts/test_phase1_validation.py
+
+      - name: Run Backend Pytest Suite
+        env:
+          DB_HOST: localhost
+          DB_PORT: "5432"
+          DB_NAME: bd_santiago_munoz_nakamoto
+          DB_USER: rw_app_role
+          DB_PASSWORD: rw_app_secure_pass_2026
+        run: |
+          cd backend
+          PYTHONPATH=. pytest tests -v
+
+  frontend:
+    name: Frontend Build & Unit Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          pnpm install
+
+      - name: Run Angular Unit Tests
+        run: |
+          cd frontend
+          npx ng test --no-watch
+
+      - name: Build Angular Production Distribution
+        run: |
+          cd frontend
+          pnpm build

@@ -1,0 +1,57 @@
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    container_name: riwi_postgres
+    restart: always
+    environment:
+      POSTGRES_DB: bd_santiago_munoz_nakamoto
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./sql/01_schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+      - ./sql/02_security_rls.sql:/docker-entrypoint-initdb.d/02_security_rls.sql:ro
+      - ./sql/03_functions_procedures.sql:/docker-entrypoint-initdb.d/03_functions_procedures.sql:ro
+      - ./sql/05_seed.sql:/docker-entrypoint-initdb.d/05_seed.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bd_santiago_munoz_nakamoto"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: riwi_backend
+    restart: always
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: bd_santiago_munoz_nakamoto
+      DB_USER: rw_app_role
+      DB_PASSWORD: rw_app_secure_pass_2026
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-riwi_secure_messaging_jwt_secret_key_2026_nakamoto_xyz}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-mock-key}
+      CLIENT_URL: "http://localhost:4200"
+    ports:
+      - "4000:4000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: riwi_frontend
+    restart: always
+    ports:
+      - "4200:80"
+    depends_on:
+      - backend
+
+volumes:
+  postgres_data:

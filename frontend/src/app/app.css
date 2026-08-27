@@ -1,0 +1,249 @@
+.app-layout {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden;
+  background-color: var(--bg-surface);
+}
+
+.main-content {
+  flex: 1;
+  display: flex;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Zone 1: Conversations */
+.zone-conversation {
+  flex: 1;
+  display: flex;
+  height: 100%;
+  overflow: hidden;
+  border-right: 1px solid var(--border-color);
+}
+
+.chat-workspace {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  background-color: #FFFFFF;
+}
+
+.chat-header {
+  padding: 12px 20px;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.header-channel-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.title-with-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.hash-tag {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-muted);
+}
+
+.channel-title-text {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-main);
+}
+
+.channel-desc {
+  margin: 0;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search-wrapper {
+  width: 280px;
+}
+
+.members-btn {
+  font-size: 12px;
+  padding: 6px 12px;
+}
+
+.no-channel-selected {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+}
+
+.no-channel-selected .empty-icon {
+  font-size: 48px;
+  margin-bottom: 12px;
+}
+
+/* Zone 2: Copilot RAG */
+.zone-copilot {
+  width: 380px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background-color: #FFFFFF;
+}
+
+/* Zone 3: Profile & Token Usage */
+.zone-profile {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: var(--bg-surface);
+  z-index: 50;
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.profile-layout-grid {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+/* Members Modal */
+.modal-backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 20px;
+}
+
+.modal-card {
+  width: 100%;
+  max-width: 480px;
+  background-color: #FFFFFF;
+  border: 2px solid var(--border-color);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-header {
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border-color);
+  background-color: var(--blue-surface);
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--blue-primary);
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  color: var(--text-muted);
+}
+
+.members-list {
+  max-height: 360px;
+  overflow-y: auto;
+  padding: 12px 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.member-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 0;
+  border-bottom: 1px solid #F1F5F9;
+}
+
+.member-avatar {
+  width: 32px;
+  height: 32px;
+  background-color: var(--blue-primary);
+  color: #FFFFFF;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+}
+
+.member-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.member-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.member-meta {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+/* Responsive Rules */
+@media (max-width: 1024px) {
+  .zone-copilot {
+    width: 320px;
+  }
+}
+
+@media (max-width: 768px) {
+  .zone-copilot.desktop-visible {
+    display: none;
+  }
+  .hidden-on-mobile {
+    display: none !important;
+  }
+  .zone-copilot {
+    width: 100%;
+  }
+  .search-wrapper {
+    width: 180px;
+  }
+}
