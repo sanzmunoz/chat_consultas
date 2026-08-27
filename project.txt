@@ -1,0 +1,69 @@
+El propósito: construir una solución fullstack profesional basada en una plataforma interna de mensajería, integrando base de datos relacional, backend, frontend, autenticación, seguridad a nivel de datos e inteligencia artificial con recuperación aumentada por contexto. Se busca evidenciar análisis de negocio, normalización hasta 3FN, lógica crítica dentro de PostgreSQL, arquitectura limpia, experiencia de usuario responsiva y un copiloto de IA que responda únicamente con información permitida para el usuario autenticado.
+
+Se debe priorizar los requisitos del mvp, justificar recortes en `DECISIONS.md y demostrar criterio técnico durante la ejecución.
+
+Requerimientos Técnicos
+- Hacer un documento que explique todos los requerimientos técnicos descritos en
+la prueba.
+Descripción del Proyecto
+Riwi Co. S.A.S. requiere modernizar su comunicación interna mediante una plataforma de mensajería organizada, segura y consistente. El sistema debe administrar usuarios, mensajes, estados de lectura, búsqueda de conversaciones y consultas a un copiloto de IA. Adicionalmente, los mensajes deben de poderse eliminar o editar conservando sus estados originales en caso de fallo. El requisito no negociable es que ningún usuario pueda leer, buscar o consultar mediante el copiloto contenido a los que no tiene acceso esto es fundamental.
+
+Requerimientos Técnicos
+1. Análisis, normalización y modelo de datos
+• Construye un Modelo Entidad Relación con entidades, atributos, claves primarias, claves foráneas, cardinalidades y justificación del tipo de clave elegido.
+• Crear un corpus seed.json que identifique entidades, relaciones y reglas de negocio implícitas, y documente el proceso de normalización hasta Primera, Segunda y Tercera Forma Normal.
+2. Implementa base de datos en PostgreSQL
+• Implementa base de datos PostgreSQL 15 o superior con nombre bd_santiago_munoz_nakamoto.
+• Todos los nombres de tablas y columnas deben estar en inglés e iniciar con el prefijo rw_.
+• Incluye DDL completo, PK, FK con ON DELETE explícito y justificado, UNIQUE, al menos un índice único parcial, NOT NULL, CHECK y fechas timestamptz en UTC.
+• Tener comentarios en ingles A2 cortos y concisos de cada bloque de codigo 
+3. Lógica de negocio en la base de datos
+• Implementa funciones transaccionales, garantizando que los permisos se validen en la base de datos y que no existan rastros parciales ante errores.
+• Activa Row Level Security sobre canales y mensajes, usando un rol de aplicación sin BYPASSRLS y un actor fijado por transacción mediante app.current_user_id.
+• Crea vista de conversaciones del usuario.
+• Crea dos procedimientos almacenados: consulta de usuarios y procedimiento de para la edición y eliminación de usuarios.
+4. Búsqueda, recuperación de contexto y seguridad
+• Delimitar forma en la que el copiloto debe recuperar los mensajes de cada usuario. No debe de tener acceso a los mensajes globales, únicamente los canales dónde el actor es miembro.
+• Usar una base vectorial para guardar los mensajes y un motor de embeddings para recuperarlos con el LLM.
+• Incorporar al menos un trigger para mantener el vector de búsqueda consistente.
+• Se prohíbe el borrado físico de mensajes, el SQL por concatenación y la paginación con OFFSET.
+5. Backend y API REST
+• Aplica Clean Architecture con capas explícitas y dependencias apuntando al dominio; el dominio no debe depender del framework web ni del driver de base de datos.
+• Implementa casos de uso delgados que validen entrada, invoquen funciones de base de datos y mapeen resultados.
+• Incluye principios SOLID demostrables en el propio código, y evalua si es necesario aplicar un patrón de diseño. En caso de aplicarlo, justificar correctamente, menciona claramente su uso y aplicacion en `DECISIONS.md`
+• Expón una API REST con códigos de estado correctos, manejo uniforme de errores, identificador de correlación y paginación por keyset.
+6. Autenticación y autorización
+• Implementa inicio de sesión con los usuarios, verificando contraseñas contra hash seguro.
+• Usa JWT con token de acceso de vida corta y refresh token con rotación, almacenado de forma segura.
+• Protege las rutas y toma el identificador del usuario exclusivamente del token, nunca del cuerpo de la petición.
+• Propaga el actor autenticado a las funciones de base de datos y a las políticas RLS.
+7. Frontend
+• Construye interfaz con tres zonas: conversación, panel del copiloto, perfil de usuario.
+• Permite envío de mensajes con estados pendiente, enviado y fallido.
+• Implementa carga de historial de forma diferida preservando la posición del scroll,
+estados de carga, vacío y error.
+• La interfaz debe ser responsiva en móvil y escritorio, estar disponible en español e
+inglés y evitar cadenas incrustadas en componentes.
+8. Copiloto de IA
+• Integra copiloto de IA con enfoque RAG, recuperando contexto exclusivamente perteneciente al actor que lo esté usando.
+• Cada respuesta debe incluir citas a los mensajes fuente y responder con honestidad cuando no exista contexto suficiente.
+• El copiloto debe conocer al usuario autenticado, su nombre y cargo, construyendo ese contexto en el servidor desde el token.
+• El proveedor de IA debe ser intercambiable entre diferentes proveedores eligiendo una interfaz especifica como OpenAI SDK.
+• El system prompt debe estar versionado, el contenido de chats debe tratarse como dato no confiable y deben existir negativas explícitas por falta de permisos, fuera de alcance o contexto insuficiente.
+9. QA, evidencias y extras
+• Incluye tres pruebas automatizadas contra PostgreSQL real: verificar que se rechaza a un usuario no miembro, confirmar que no se retorna mensajes de canales privados ajenos y propon otra.
+10. Despliegue
+• docker compose up levanta base de datos, backend y frontend.
+• Debe existir un comando documentado para ejecutar migraciones y cargar el corpus completo.
+• Incluye .env.example sin secretos reales y verifica que el proyecto pueda levantarse en una máquina limpia siguiendo únicamente el README.
+11. Consultas y funciones SQL requeridas
+• Consulta 1: historial de mensajes de un canal con paginación por keyset.
+• Consulta 2: búsqueda de mensajes con resaltado del término encontrado.
+• Consulta 3: recuperación de contexto para el copiloto con permisos en SQL.
+• Consulta 4: consumo acumulado del copiloto por usuario.
+
+Informacion que debe estar en el proyecto
+Script DDL, scripts de carga, scripts DML, consultas SQL, funciones, triggers, vistas, procedimientos y políticas RLS.
+• Modelo Entidad Relación en PDF o imagen, seed.json original y archivos utilizados para representar la solución.
+• Documentación de API mediante Swagger/OpenAPI publicado o colección Postman exportada.
+• README.md, ARCHITECTURE.md, DECISIONS.md, evidencias de ejecución y URL del repositorio.
