@@ -116,9 +116,8 @@ with open("/home/cohorte5/Documentos/san_mz/chat_consultas_riwi/seed.json", "r",
     raw_data = json.load(f)
 
 # Bcrypt hash for password 'riwi2026!'
-# Verified standard passlib bcrypt format:
-# $2a$10$D9ZPcsAov6yLiRrhr8GVMekkdjBQZ6OetYjTRmXL9GINjwT5UiqCC
-BCRYPT_HASH = "$2a$10$D9ZPcsAov6yLiRrhr8GVMekkdjBQZ6OetYjTRmXL9GINjwT5UiqCC"
+BCRYPT_HASH = "$2b$10$g.ans7Ct8NOfk547XBjToumBTu9qllsxf.UP6GxtLsyAgPH9qTQYG"
+
 
 sql_lines = [
     "-- =============================================================================",

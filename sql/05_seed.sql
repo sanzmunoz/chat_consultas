@@ -7,11 +7,11 @@
 -- 1. Seed Users
 INSERT INTO rw_users (id, username, email, password_hash, display_name, role, position, is_active)
 VALUES
-  ('11111111-1111-4111-8111-111111111111', 'smunoz', 'santiago.munoz@riwi.co', '$2a$10$D9ZPcsAov6yLiRrhr8GVMekkdjBQZ6OetYjTRmXL9GINjwT5UiqCC', 'Santiago Muñoz', 'admin', 'Tech Lead', TRUE),
-  ('22222222-2222-4222-8222-222222222222', 'crojas', 'camila.rojas@riwi.co', '$2a$10$D9ZPcsAov6yLiRrhr8GVMekkdjBQZ6OetYjTRmXL9GINjwT5UiqCC', 'Camila Rojas', 'member', 'Frontend Developer', TRUE),
-  ('33333333-3333-4333-8333-333333333333', 'nvega', 'nestor.vega@riwi.co', '$2a$10$D9ZPcsAov6yLiRrhr8GVMekkdjBQZ6OetYjTRmXL9GINjwT5UiqCC', 'Néstor Vega', 'member', 'Backend Developer', TRUE),
-  ('44444444-4444-4444-8444-444444444444', 'vcastro', 'valentina.castro@riwi.co', '$2a$10$D9ZPcsAov6yLiRrhr8GVMekkdjBQZ6OetYjTRmXL9GINjwT5UiqCC', 'Valentina Castro', 'member', 'QA Engineer', TRUE),
-  ('55555555-5555-4555-8555-555555555555', 'alopez', 'andres.lopez@riwi.co', '$2a$10$D9ZPcsAov6yLiRrhr8GVMekkdjBQZ6OetYjTRmXL9GINjwT5UiqCC', 'Andrés López', 'member', 'DevOps Engineer', TRUE)
+  ('11111111-1111-4111-8111-111111111111', 'smunoz', 'santiago.munoz@riwi.co', '$2b$10$g.ans7Ct8NOfk547XBjToumBTu9qllsxf.UP6GxtLsyAgPH9qTQYG', 'Santiago Muñoz', 'admin', 'Tech Lead', TRUE),
+  ('22222222-2222-4222-8222-222222222222', 'crojas', 'camila.rojas@riwi.co', '$2b$10$g.ans7Ct8NOfk547XBjToumBTu9qllsxf.UP6GxtLsyAgPH9qTQYG', 'Camila Rojas', 'member', 'Frontend Developer', TRUE),
+  ('33333333-3333-4333-8333-333333333333', 'nvega', 'nestor.vega@riwi.co', '$2b$10$g.ans7Ct8NOfk547XBjToumBTu9qllsxf.UP6GxtLsyAgPH9qTQYG', 'Néstor Vega', 'member', 'Backend Developer', TRUE),
+  ('44444444-4444-4444-8444-444444444444', 'vcastro', 'valentina.castro@riwi.co', '$2b$10$g.ans7Ct8NOfk547XBjToumBTu9qllsxf.UP6GxtLsyAgPH9qTQYG', 'Valentina Castro', 'member', 'QA Engineer', TRUE),
+  ('55555555-5555-4555-8555-555555555555', 'alopez', 'andres.lopez@riwi.co', '$2b$10$g.ans7Ct8NOfk547XBjToumBTu9qllsxf.UP6GxtLsyAgPH9qTQYG', 'Andrés López', 'member', 'DevOps Engineer', TRUE)
 ON CONFLICT (email) DO UPDATE 
 SET display_name = EXCLUDED.display_name,
     role = EXCLUDED.role,

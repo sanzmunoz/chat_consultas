@@ -400,3 +400,60 @@ BEGIN
     END IF;
 END;
 $$;
+
+-- 7. Functions for Refresh Token Management (SECURITY DEFINER for pre-authentication operations)
+CREATE OR REPLACE FUNCTION rw_fn_save_refresh_token(
+    p_user_id UUID,
+    p_token_hash VARCHAR,
+    p_expires_at TIMESTAMPTZ
+) 
+RETURNS VOID 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
+AS $$
+BEGIN
+    INSERT INTO rw_refresh_tokens (user_id, token_hash, expires_at, is_revoked)
+    VALUES (p_user_id, p_token_hash, p_expires_at, FALSE);
+END;
+$$;
+
+CREATE OR REPLACE FUNCTION rw_fn_rotate_refresh_token(
+    p_old_token_hash VARCHAR,
+    p_new_token_hash VARCHAR,
+    p_new_expires_at TIMESTAMPTZ
+) 
+RETURNS UUID 
+LANGUAGE plpgsql 
+SECURITY DEFINER
+SET search_path = public
+AS $$
+DECLARE
+    v_token_id UUID;
+    v_user_id UUID;
+    v_expires_at TIMESTAMPTZ;
+    v_is_revoked BOOLEAN;
+BEGIN
+    -- Look up old token
+    SELECT id, user_id, expires_at, is_revoked 
+    INTO v_token_id, v_user_id, v_expires_at, v_is_revoked
+    FROM rw_refresh_tokens
+    WHERE token_hash = p_old_token_hash
+    FOR UPDATE;
+
+    IF v_token_id IS NULL OR v_is_revoked = TRUE OR v_expires_at < CURRENT_TIMESTAMP THEN
+        RETURN NULL;
+    END IF;
+
+    -- Revoke old token
+    UPDATE rw_refresh_tokens 
+    SET is_revoked = TRUE 
+    WHERE id = v_token_id;
+
+    -- Save new token
+    INSERT INTO rw_refresh_tokens (user_id, token_hash, expires_at, is_revoked)
+    VALUES (v_user_id, p_new_token_hash, p_new_expires_at, FALSE);
+
+    RETURN v_user_id;
+END;
+$$;
