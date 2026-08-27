@@ -10,15 +10,6 @@ import { I18nService } from '../../../../core/services/i18n.service';
   imports: [CommonModule, FormsModule],
   template: `
     <div class="input-container">
-      <div class="input-controls">
-        <span class="status-mode-label">Estado de envío:</span>
-        <select class="status-select" [(ngModel)]="sendMode">
-          <option value="sent">✓ Enviado (Normal)</option>
-          <option value="pending">⏳ Pendiente (En proceso)</option>
-          <option value="failed">⚠️ Fallido (Error de red)</option>
-        </select>
-      </div>
-
       <div class="input-form">
         <textarea 
           class="input-field message-textarea" 
@@ -53,25 +44,6 @@ import { I18nService } from '../../../../core/services/i18n.service';
       padding: 12px 16px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
-    }
-    .input-controls {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    .status-mode-label {
-      font-size: 11px;
-      font-weight: 600;
-      color: var(--text-muted);
-    }
-    .status-select {
-      font-size: 11px;
-      padding: 2px 6px;
-      border: 1px solid var(--border-color);
-      background-color: var(--bg-surface);
-      color: var(--text-main);
-      outline: none;
     }
     .input-form {
       display: flex;
@@ -93,7 +65,6 @@ import { I18nService } from '../../../../core/services/i18n.service';
     @media (max-width: 768px) {
       .input-container {
         padding: 8px 10px;
-        gap: 6px;
       }
       .message-textarea {
         min-height: 42px;
@@ -112,7 +83,6 @@ export class MessageInputComponent {
   i18n = inject(I18nService);
 
   messageText: string = '';
-  sendMode: string = 'sent';
 
   currentChannelName(): string {
     const selectedId = this.store.selectedChannelId();
@@ -129,7 +99,7 @@ export class MessageInputComponent {
 
   onSendMessage() {
     if (!this.messageText.trim()) return;
-    this.store.sendMessage(this.messageText, this.sendMode);
+    this.store.sendMessage(this.messageText.trim(), 'sent');
     this.messageText = '';
   }
 }

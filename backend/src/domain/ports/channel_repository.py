@@ -24,3 +24,19 @@ class ChannelRepositoryPort(Protocol):
         member_ids: Optional[List[UUID]] = None
     ) -> Channel:
         ...
+
+    async def edit_channel(
+        self,
+        actor_id: UUID,
+        channel_id: UUID,
+        name: Optional[str] = None,
+        description: Optional[str] = None
+    ) -> bool:
+        ...
+
+    async def delete_channel(
+        self,
+        actor_id: UUID,
+        channel_id: UUID
+    ) -> bool:
+        ...

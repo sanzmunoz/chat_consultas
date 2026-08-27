@@ -30,7 +30,12 @@
     "noChannels": "No channels assigned",
     "searchChannels": "Search channel...",
     "selectChannel": "Select a channel to start messaging",
-    "channelMembers": "Channel Members"
+    "channelMembers": "Channel Members",
+    "create": "Create Channel",
+    "channelName": "Channel Name",
+    "description": "Description",
+    "type": "Channel Type",
+    "cancel": "Cancel"
   },
   "messages": {
     "placeholder": "Write a message in",

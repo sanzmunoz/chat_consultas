@@ -98,16 +98,9 @@ class OpenAILlmService:
                     context_snippets.append(block)
 
             if context_snippets:
-                bullets = "\n\n".join(f"• {b}" for b in context_snippets[:4])
-                fallback_text = (
-                    f"De acuerdo con las conversaciones en tus canales autorizados:\n\n"
-                    f"{bullets}\n\n"
-                    f"Puedes verificar las referencias en las citas adjuntas."
-                )
+                bullets = "\n".join(f"• {b}" for b in context_snippets[:3])
+                fallback_text = f"Canales autorizados:\n{bullets}"
             else:
-                fallback_text = (
-                    "De acuerdo con la información disponible en tus canales autorizados, "
-                    "se encontraron los mensajes relacionados detallados en las citas adjuntas."
-                )
+                fallback_text = "Información disponible en las citas autorizadas adjuntas."
         c_tokens = len(fallback_text) // 4
         return fallback_text, p_tokens, c_tokens, p_tokens + c_tokens

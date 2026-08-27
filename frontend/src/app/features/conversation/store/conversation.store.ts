@@ -75,6 +75,29 @@ export const ConversationStore = signalStore(
       }
     },
 
+    async editChannel(channelId: string, name?: string, description?: string) {
+      try {
+        await firstValueFrom(api.editChannel(channelId, { name, description }));
+        await this.loadChannels();
+        return true;
+      } catch (err: any) {
+        patchState(store, { error: err.error?.detail || err.message || 'Error editando canal' });
+        return false;
+      }
+    },
+
+    async deleteChannel(channelId: string) {
+      try {
+        await firstValueFrom(api.deleteChannel(channelId));
+        patchState(store, { selectedChannelId: null, messages: [] });
+        await this.loadChannels();
+        return true;
+      } catch (err: any) {
+        patchState(store, { error: err.error?.detail || err.message || 'Error eliminando canal' });
+        return false;
+      }
+    },
+
     selectChannel(channelId: string) {
       if (store.selectedChannelId() === channelId) return;
       patchState(store, {

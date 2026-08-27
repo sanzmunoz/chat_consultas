@@ -73,6 +73,12 @@ import { Message } from '../../../../core/models/message.model';
                 <div class="message-body">
                   <p class="message-text">{{ msg.content }}</p>
                   
+                  @if (msg.status === 'failed') {
+                    <div class="message-error-badge">
+                      ⚠️ Inconveniente en el envío: no se pudo entregar el mensaje.
+                    </div>
+                  }
+
                   @if (msg.is_edited) {
                     <div class="edited-flag">
                       <span class="edited-text">({{ i18n.t('messages.edited') }})</span>
@@ -88,6 +94,9 @@ import { Message } from '../../../../core/models/message.model';
 
               <div class="message-footer">
                 <span class="msg-ref-tag">{{ msg.msg_ref }}</span>
+                @if (msg.status === 'failed') {
+                  <span class="status-failed-text">⚠️ Fallido</span>
+                }
                 @if (msg.read_count > 0) {
                   <span class="read-receipt-tag">👁️ {{ msg.read_count }}</span>
                 }
@@ -242,6 +251,23 @@ import { Message } from '../../../../core/models/message.model';
       line-height: 1.45;
       color: var(--text-main);
       word-break: break-word;
+    }
+    .message-error-badge {
+      margin-top: 6px;
+      padding: 4px 8px;
+      background-color: #FEF2F2;
+      border-left: 3px solid #DC2626;
+      color: #DC2626;
+      font-size: 11px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .status-failed-text {
+      color: #DC2626;
+      font-weight: 700;
+      font-size: 10px;
     }
     .edited-flag {
       margin-top: 4px;

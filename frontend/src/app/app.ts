@@ -1,5 +1,6 @@
 import { Component, inject, signal, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { RouterOutlet, Router } from '@angular/router';
 import { AuthService } from './core/services/auth.service';
 import { I18nService } from './core/services/i18n.service';
@@ -12,12 +13,14 @@ import { MessageSearchComponent } from './features/conversation/components/messa
 import { ChatPanelComponent } from './features/copilot/components/chat-panel/chat-panel.component';
 import { UserProfileComponent } from './features/profile/components/user-profile/user-profile.component';
 import { TokenUsageComponent } from './features/profile/components/token-usage/token-usage.component';
+import { ChannelSummary } from './core/models/channel.model';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [
     CommonModule,
+    FormsModule,
     RouterOutlet,
     NavbarComponent,
     ChannelListComponent,
@@ -41,6 +44,11 @@ export class App implements OnInit {
   showMembersModal = signal(false);
   mobileShowChat = signal(false);
 
+  showEditChannelModal = signal(false);
+  editingChannelId: string | null = null;
+  editChannelName = '';
+  editChannelDesc = '';
+
   ngOnInit() {
     if (this.auth.isAuthenticated()) {
       this.store.loadChannels();
@@ -61,5 +69,36 @@ export class App implements OnInit {
 
   toggleMembersModal() {
     this.showMembersModal.update((v) => !v);
+  }
+
+  openEditChannelModal(channel: ChannelSummary) {
+    this.editingChannelId = channel.channel_id;
+    this.editChannelName = channel.channel_name.replace('#', '');
+    this.editChannelDesc = channel.channel_description || '';
+    this.showEditChannelModal.set(true);
+  }
+
+  closeEditChannelModal() {
+    this.showEditChannelModal.set(false);
+    this.editingChannelId = null;
+  }
+
+  async saveEditChannel(event: Event) {
+    event.preventDefault();
+    if (!this.editingChannelId || !this.editChannelName.trim()) return;
+
+    await this.store.editChannel(
+      this.editingChannelId,
+      this.editChannelName.trim(),
+      this.editChannelDesc.trim()
+    );
+    this.closeEditChannelModal();
+  }
+
+  async confirmDeleteChannel(channel: ChannelSummary) {
+    const confirmMsg = `¿Estás seguro de que deseas eliminar/archivar el canal #${channel.channel_name.replace('#', '')}?`;
+    if (window.confirm(confirmMsg)) {
+      await this.store.deleteChannel(channel.channel_id);
+    }
   }
 }

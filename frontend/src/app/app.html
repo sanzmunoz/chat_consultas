@@ -40,7 +40,7 @@
                 }
               </div>
 
-              <!-- Top Right in Chat Header: Search & Members Button -->
+              <!-- Top Right in Chat Header: Search, Members Button & Admin Channel Actions -->
               <div class="header-actions">
                 <div class="search-wrapper">
                   <app-message-search></app-message-search>
@@ -48,6 +48,14 @@
                 <button class="btn-secondary members-btn" (click)="toggleMembersModal()">
                   👥 {{ channel.member_count }}
                 </button>
+                @if (auth.currentUser()?.role === 'admin' || channel.user_channel_role === 'owner') {
+                  <button class="btn-secondary channel-action-btn" (click)="openEditChannelModal(channel)" title="Editar canal">
+                    ✏️
+                  </button>
+                  <button class="btn-secondary channel-action-btn delete-channel-btn" (click)="confirmDeleteChannel(channel)" title="Eliminar / Archivar canal">
+                    🗑️
+                  </button>
+                }
               </div>
             </div>
 
@@ -80,6 +88,49 @@
         </section>
       }
     </main>
+
+    <!-- Edit Channel Modal -->
+    @if (showEditChannelModal()) {
+      <div class="modal-backdrop" (click)="closeEditChannelModal()">
+        <div class="modal-card" (click)="$event.stopPropagation()">
+          <div class="modal-header">
+            <h3>✏️ Editar Canal</h3>
+            <button class="modal-close-btn" (click)="closeEditChannelModal()">✕</button>
+          </div>
+          <form class="modal-body" (submit)="saveEditChannel($event)">
+            <div class="form-group">
+              <label class="form-label">{{ i18n.t('channels.channelName') }} *</label>
+              <div class="input-prefix-wrapper">
+                <span class="prefix-hash">#</span>
+                <input 
+                  type="text" 
+                  class="form-input prefix-input" 
+                  [(ngModel)]="editChannelName" 
+                  name="editName" 
+                  required 
+                />
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="form-label">{{ i18n.t('channels.description') }}</label>
+              <input 
+                type="text" 
+                class="form-input" 
+                [(ngModel)]="editChannelDesc" 
+                name="editDesc" 
+                placeholder="Descripción del canal..." 
+              />
+            </div>
+            <div class="modal-actions">
+              <button type="button" class="btn-secondary" (click)="closeEditChannelModal()">{{ i18n.t('channels.cancel') }}</button>
+              <button type="submit" class="btn-primary" [disabled]="!editChannelName.trim()">
+                {{ i18n.t('common.confirm') }}
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    }
 
     <!-- Channel Members Modal -->
     @if (showMembersModal()) {

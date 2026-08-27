@@ -42,3 +42,7 @@ class CreateChannelResponse(BaseModel):
     is_archived: bool
     created_at: datetime
     updated_at: datetime
+
+class EditChannelRequest(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None

@@ -5,7 +5,8 @@ from src.presentation.schemas.channel_schemas import (
     ChannelSummaryResponse,
     ChannelMemberResponse,
     CreateChannelRequest,
-    CreateChannelResponse
+    CreateChannelResponse,
+    EditChannelRequest
 )
 from src.presentation.middleware.auth_middleware import get_current_user
 from src.domain.entities.user import User
@@ -72,7 +73,40 @@ async def create_channel(req: CreateChannelRequest, current_user: User = Depends
     except ValueError as e:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
     except Exception as e:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error creando canal: {str(e)}")
+        err_msg = str(e)
+        if "unique constraint" in err_msg or "already exists" in err_msg:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Ya existe un canal con ese nombre.")
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=f"Error creando canal: {err_msg}")
+
+@router.patch("/{id}", summary="Editar nombre o descripción de un canal")
+async def edit_channel(id: UUID, req: EditChannelRequest, current_user: User = Depends(get_current_user)):
+    """
+    Edita un canal existente (solo owner o admin).
+    """
+    try:
+        success = await channel_repo.edit_channel(
+            actor_id=current_user.id,
+            channel_id=id,
+            name=req.name,
+            description=req.description
+        )
+        return {"status": "updated", "channel_id": id}
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+@router.delete("/{id}", summary="Archivar / Eliminar un canal")
+async def delete_channel(id: UUID, current_user: User = Depends(get_current_user)):
+    """
+    Archiva (soft-delete) un canal (solo owner o admin).
+    """
+    try:
+        success = await channel_repo.delete_channel(
+            actor_id=current_user.id,
+            channel_id=id
+        )
+        return {"status": "archived", "channel_id": id}
+    except Exception as e:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
 
 @router.get("/{id}/members", response_model=List[ChannelMemberResponse], summary="Obtener miembros de un canal")
 async def get_channel_members(id: UUID, current_user: User = Depends(get_current_user)):

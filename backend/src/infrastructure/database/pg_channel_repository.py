@@ -181,3 +181,46 @@ class PgChannelRepository(ChannelRepositoryPort):
                 created_at=row["created_at"],
                 updated_at=row["updated_at"]
             )
+
+    async def edit_channel(
+        self,
+        actor_id: UUID,
+        channel_id: UUID,
+        name: Optional[str] = None,
+        description: Optional[str] = None
+    ) -> bool:
+        clean_name = None
+        if name:
+            clean_name = name.strip()
+            if not clean_name.startswith("#"):
+                clean_name = f"#{clean_name}"
+
+        async with get_connection_with_actor(actor_id) as conn:
+            await conn.execute(
+                """
+                UPDATE rw_channels
+                SET 
+                    name = COALESCE($2, name),
+                    description = COALESCE($3, description),
+                    updated_at = CURRENT_TIMESTAMP
+                WHERE id = $1 AND is_archived = FALSE;
+                """,
+                channel_id, clean_name, description
+            )
+            return True
+
+    async def delete_channel(
+        self,
+        actor_id: UUID,
+        channel_id: UUID
+    ) -> bool:
+        async with get_connection_with_actor(actor_id) as conn:
+            await conn.execute(
+                """
+                UPDATE rw_channels
+                SET is_archived = TRUE, updated_at = CURRENT_TIMESTAMP
+                WHERE id = $1;
+                """,
+                channel_id
+            )
+            return True

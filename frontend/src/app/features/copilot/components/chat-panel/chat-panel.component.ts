@@ -15,36 +15,24 @@ import { CitationCardComponent } from '../citation-card/citation-card.component'
       <div class="copilot-header">
         <div class="copilot-title-row">
           <div class="copilot-avatar">🤖</div>
-          <div>
-            <h3 class="copilot-title">{{ i18n.t('copilot.title') }}</h3>
-            <p class="copilot-subtitle">{{ i18n.t('copilot.subtitle') }}</p>
-          </div>
-          <div class="model-badge-group">
-            <span class="badge badge-blue">{{ i18n.t('copilot.model') }}: gpt-4o-mini</span>
-            <span class="badge badge-mint">v1.yaml</span>
-          </div>
-        </div>
-
-        <div class="disclaimer-banner">
-          🔒 {{ i18n.t('copilot.disclaimer') }}
+          <h3 class="copilot-title">{{ i18n.t('copilot.title') }}</h3>
         </div>
       </div>
 
       <!-- Quick Suggested Questions -->
       <div class="suggested-section">
-        <span class="suggested-label">{{ i18n.t('copilot.suggestedQuestions') }}</span>
         <div class="suggested-chips">
           <button class="chip-btn" (click)="askPrompt('¿Cuál es el estado actual de la integración del copiloto?')">
-            💡 ¿Estado de integración del copiloto?
+            💡 ¿Estado de integración?
           </button>
           <button class="chip-btn" (click)="askPrompt('¿Qué bloqueos tiene el equipo backend?')">
-            ⚙️ ¿Bloqueos del equipo backend?
+            ⚙️ ¿Bloqueos backend?
           </button>
           <button class="chip-btn" (click)="askPrompt('¿Qué se ha discutido sobre las políticas RLS?')">
-            🛡️ ¿Políticas RLS discutidas?
+            🛡️ ¿Políticas RLS?
           </button>
           <button class="chip-btn" (click)="askPrompt('¿Cuál es el estado del deploy en Render?')">
-            🚀 ¿Estado del deploy en Render?
+            🚀 ¿Deploy en Render?
           </button>
         </div>
       </div>
@@ -140,19 +128,19 @@ import { CitationCardComponent } from '../citation-card/citation-card.component'
     }
     .copilot-header {
       flex-shrink: 0;
-      padding: 16px;
+      padding: 12px 16px;
       border-bottom: 1px solid var(--border-color);
       background-color: var(--bg-surface);
     }
     .copilot-title-row {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 10px;
     }
     .copilot-avatar {
-      font-size: 24px;
-      width: 40px;
-      height: 40px;
+      font-size: 20px;
+      width: 32px;
+      height: 32px;
       background-color: var(--blue-surface);
       border: 1px solid var(--blue-primary);
       display: flex;
@@ -161,45 +149,15 @@ import { CitationCardComponent } from '../citation-card/citation-card.component'
     }
     .copilot-title {
       margin: 0;
-      font-size: 15px;
+      font-size: 14px;
       font-weight: 700;
       color: var(--text-main);
     }
-    .copilot-subtitle {
-      margin: 2px 0 0;
-      font-size: 11px;
-      color: var(--text-muted);
-    }
-    .model-badge-group {
-      margin-left: auto;
-      display: flex;
-      gap: 6px;
-    }
-    .disclaimer-banner {
-      margin-top: 10px;
-      padding: 6px 10px;
-      background-color: #EFF6FF;
-      border: 1px solid #BFDBFE;
-      color: #1E40AF;
-      font-size: 11px;
-      line-height: 1.35;
-    }
     .suggested-section {
       flex-shrink: 0;
-      padding: 10px 16px;
+      padding: 8px 14px;
       background-color: #FFFFFF;
       border-bottom: 1px solid var(--border-color);
-      max-height: 110px;
-      overflow-y: auto;
-    }
-    .suggested-label {
-      font-size: 10px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-      display: block;
-      margin-bottom: 6px;
     }
     .suggested-chips {
       display: flex;
